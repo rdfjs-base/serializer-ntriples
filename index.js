@@ -1,12 +1,12 @@
 var rdf = require('rdf-ext')
-var util = require('util')
+var inherits = require('inherits')
 var AbstractSerializer = require('rdf-serializer-abstract')
 
 function NTriplesSerializer () {
   AbstractSerializer.call(this, rdf)
 }
 
-util.inherits(NTriplesSerializer, AbstractSerializer)
+inherits(NTriplesSerializer, AbstractSerializer)
 
 NTriplesSerializer.prototype.serialize = function (graph, done) {
   return new Promise(function (resolve) {
