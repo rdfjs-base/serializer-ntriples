@@ -11,7 +11,7 @@ class NTriplesSerializer extends Readable {
 
   import (stream) {
     stream.on('data', (quad) => {
-      this.push(quad.toCanonical() + ' .\n')
+      this.push(quad.toCanonical() + '\n')
     })
 
     stream.on('end', () => {
@@ -21,6 +21,14 @@ class NTriplesSerializer extends Readable {
     stream.on('error', (err) => {
       this.emit('error', err)
     })
+  }
+
+  static import (stream) {
+    let serializer = new NTriplesSerializer()
+
+    serializer.import(stream)
+
+    return serializer
   }
 }
 
