@@ -1,92 +1,40 @@
-'use strict'
-
 /* global describe, it */
 
 const assert = require('assert')
-const rdf = require('rdf-data-model')
-const EventEmitter = require('events').EventEmitter
+const rdf = require('rdf-ext')
+const sinkTest = require('rdf-sink/test')
 const NTriplesSerializer = require('..')
-
-function streamToPromise (stream) {
-  return new Promise((resolve, reject) => {
-    stream.on('end', resolve)
-    stream.on('error', reject)
-  })
-}
-
-function streamToPromiseError (stream) {
-  return new Promise((resolve, reject) => {
-    stream.on('end', reject)
-    stream.on('error', resolve)
-  })
-}
+const Readable = require('readable-stream')
 
 describe('rdf-serializer-ntriples', () => {
-  it('should be a constructor', () => {
-    assert.equal(typeof NTriplesSerializer, 'function')
-  })
-
-  it('should have a .import method', () => {
-    let serializer = new NTriplesSerializer()
-
-    assert.equal(typeof serializer.import, 'function')
-  })
-
-  it('should forward the end event', () => {
-    let input = new EventEmitter()
-    let serializer = new NTriplesSerializer()
-    let emitted = false
-
-    serializer.on('end', () => {
-      emitted = true
-    })
-
-    let result = streamToPromise(input).then(() => {
-      assert.equal(emitted, true)
-    })
-
-    serializer.import(input)
-
-    input.emit('end')
-
-    return result
-  })
-
-  it('should forward the error event', () => {
-    let input = new EventEmitter()
-    let serializer = new NTriplesSerializer()
-    let emitted = false
-
-    serializer.on('error', () => {
-      emitted = true
-    })
-
-    let result = streamToPromiseError(input).then(() => {
-      assert.equal(emitted, true)
-    })
-
-    serializer.import(input)
-
-    input.emit('error')
-
-    return result
-  })
+  sinkTest(NTriplesSerializer, {readable: true})
 
   it('should serialize incoming quads', () => {
-    let input = new EventEmitter()
+    const quad = rdf.quad(
+      rdf.namedNode('http://example.org/subject'),
+      rdf.namedNode('http://example.org/predicate'),
+      rdf.literal('object'),
+      rdf.namedNode('http://example.org/graph')
+    )
+
+    const ntriples = '<http://example.org/subject> <http://example.org/predicate> "object" <http://example.org/graph> .\n'
+
+    let input = new Readable()
+
+    input._readableState.objectMode = true
+
+    input._read = () => {
+      input.push(quad)
+      input.push(null)
+    }
+
     let serializer = new NTriplesSerializer()
-    let quad = rdf.quad(rdf.namedNode('http://example.org/subject'), rdf.namedNode('http://example.org/predicate'),
-      rdf.literal('object'), rdf.namedNode('http://example.org/graph'))
+    let stream = serializer.import(input)
 
-    serializer.import(input)
+    return Promise.resolve().then(() => {
+      assert.equal(stream.read().toString(), ntriples)
 
-    let result = streamToPromise(serializer).then(() => {
-      assert.equal(serializer.read().toString(), '<http://example.org/subject> <http://example.org/predicate> "object" <http://example.org/graph> .\n')
+      return rdf.waitFor(stream)
     })
-
-    input.emit('data', quad)
-    input.emit('end')
-
-    return result
   })
 })

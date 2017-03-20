@@ -1,35 +1,10 @@
-'use strict'
+const SerializerStream = require('./lib/SerializerStream')
+const Sink = require('rdf-sink')
 
-const Readable = require('stream').Readable
-
-class NTriplesSerializer extends Readable {
+class Serializer extends Sink {
   constructor () {
-    super()
-
-    this._read = () => {}
-  }
-
-  import (stream) {
-    stream.on('data', (quad) => {
-      this.push(quad.toCanonical() + '\n')
-    })
-
-    stream.on('end', () => {
-      this.emit('end')
-    })
-
-    stream.on('error', (err) => {
-      this.emit('error', err)
-    })
-  }
-
-  static import (stream) {
-    let serializer = new NTriplesSerializer()
-
-    serializer.import(stream)
-
-    return serializer
+    super(SerializerStream)
   }
 }
 
-module.exports = NTriplesSerializer
+module.exports = Serializer
