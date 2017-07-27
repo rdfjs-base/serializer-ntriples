@@ -1,129 +1,40 @@
 /* global describe, it */
-var assert = require('assert')
-var rdf = require('rdf-ext')
-var NTriplesSerializer = require('../')
 
-var simpleGraph = rdf.createGraph()
+const assert = require('assert')
+const rdf = require('rdf-ext')
+const sinkTest = require('rdf-sink/test')
+const NTriplesSerializer = require('..')
+const Readable = require('readable-stream')
 
-simpleGraph.add(rdf.createTriple(
-  rdf.createNamedNode('http://example.org/subject'),
-  rdf.createNamedNode('http://example.org/predicate'),
-  rdf.createLiteral('object')
-))
+describe('rdf-serializer-ntriples', () => {
+  sinkTest(NTriplesSerializer, {readable: true})
 
-var simpleGraphNT = '<http://example.org/subject> <http://example.org/predicate> "object" .'
+  it('should serialize incoming quads', () => {
+    const quad = rdf.quad(
+      rdf.namedNode('http://example.org/subject'),
+      rdf.namedNode('http://example.org/predicate'),
+      rdf.literal('object'),
+      rdf.namedNode('http://example.org/graph')
+    )
 
-describe('N-Triples serializer', function () {
-  describe('instance API', function () {
-    describe('callback API', function () {
-      it('should be supported', function (done) {
-        var serializer = new NTriplesSerializer()
+    const ntriples = '<http://example.org/subject> <http://example.org/predicate> "object" <http://example.org/graph> .\n'
 
-        Promise.resolve(new Promise(function (resolve, reject) {
-          serializer.serialize(simpleGraph, function (error, nTriples) {
-            if (error) {
-              reject(error)
-            } else {
-              resolve(nTriples)
-            }
-          })
-        })).then(function (nTriples) {
-          assert.equal(nTriples.trim(), simpleGraphNT)
+    let input = new Readable()
 
-          done()
-        }).catch(function (error) {
-          done(error)
-        })
-      })
-    })
+    input._readableState.objectMode = true
 
-    describe('Promise API', function () {
-      it('should be supported', function (done) {
-        var serializer = new NTriplesSerializer()
+    input._read = () => {
+      input.push(quad)
+      input.push(null)
+    }
 
-        serializer.serialize(simpleGraph).then(function (nTriples) {
-          assert.equal(nTriples.trim(), simpleGraphNT)
+    let serializer = new NTriplesSerializer()
+    let stream = serializer.import(input)
 
-          done()
-        }).catch(function (error) {
-          done(error)
-        })
-      })
-    })
+    return Promise.resolve().then(() => {
+      assert.equal(stream.read().toString(), ntriples)
 
-    describe('Stream API', function () {
-      it('should be supported', function (done) {
-        var serializer = new NTriplesSerializer()
-        var nTriples
-
-        serializer.stream(simpleGraph).on('data', function (data) {
-          nTriples = data
-        }).on('end', function () {
-          if (!nTriples) {
-            done('no data streamed')
-          } else if (nTriples.trim() !== simpleGraphNT) {
-            done('wrong output')
-          } else {
-            done()
-          }
-        }).on('error', function (error) {
-          done(error)
-        })
-      })
-    })
-  })
-
-  describe('static API', function () {
-    describe('callback API', function () {
-      it('should be supported', function (done) {
-        Promise.resolve(new Promise(function (resolve, reject) {
-          NTriplesSerializer.serialize(simpleGraph, function (error, nTriples) {
-            if (error) {
-              reject(error)
-            } else {
-              resolve(nTriples)
-            }
-          })
-        })).then(function (nTriples) {
-          assert.equal(nTriples.trim(), simpleGraphNT)
-
-          done()
-        }).catch(function (error) {
-          done(error)
-        })
-      })
-    })
-
-    describe('Promise API', function () {
-      it('should be supported', function (done) {
-        NTriplesSerializer.serialize(simpleGraph).then(function (nTriples) {
-          assert.equal(nTriples.trim(), simpleGraphNT)
-
-          done()
-        }).catch(function (error) {
-          done(error)
-        })
-      })
-    })
-
-    describe('Stream API', function () {
-      it('should be supported', function (done) {
-        var nTriples
-
-        NTriplesSerializer.stream(simpleGraph).on('data', function (data) {
-          nTriples = data
-        }).on('end', function () {
-          if (!nTriples) {
-            done('no data streamed')
-          } else if (nTriples.trim() !== simpleGraphNT) {
-            done('wrong output')
-          } else {
-            done()
-          }
-        }).on('error', function (error) {
-          done(error)
-        })
-      })
+      return rdf.waitFor(stream)
     })
   })
 })

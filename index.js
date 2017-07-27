@@ -1,33 +1,10 @@
-var rdf = require('rdf-ext')
-var inherits = require('inherits')
-var AbstractSerializer = require('rdf-serializer-abstract')
+const SerializerStream = require('./lib/SerializerStream')
+const Sink = require('rdf-sink')
 
-function NTriplesSerializer () {
-  AbstractSerializer.call(this, rdf)
+class Serializer extends Sink {
+  constructor () {
+    super(SerializerStream)
+  }
 }
 
-inherits(NTriplesSerializer, AbstractSerializer)
-
-NTriplesSerializer.prototype.serialize = function (graph, done) {
-  return new Promise(function (resolve) {
-    done = done || function () {}
-
-    var nTriples = ''
-
-    graph.forEach(function (triple) {
-      nTriples += triple.toString() + '\n'
-    })
-
-    done(null, nTriples)
-    resolve(nTriples)
-  })
-}
-
-// add singleton methods to class
-var instance = new NTriplesSerializer()
-
-for (var property in instance) {
-  NTriplesSerializer[property] = instance[property]
-}
-
-module.exports = NTriplesSerializer
+module.exports = Serializer
