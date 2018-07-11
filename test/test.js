@@ -2,7 +2,7 @@
 
 const assert = require('assert')
 const rdf = require('@rdfjs/data-model')
-const sinkTest = require('rdf-sink/test')
+const sinkTest = require('@rdfjs/sink/test')
 const NTriplesSerializer = require('..')
 const Readable = require('readable-stream')
 
