@@ -1,12 +1,19 @@
 /* global describe, it */
 
 const assert = require('assert')
-const rdf = require('rdf-ext')
+const rdf = require('@rdfjs/data-model')
 const sinkTest = require('rdf-sink/test')
 const NTriplesSerializer = require('..')
 const Readable = require('readable-stream')
 
-describe('rdf-serializer-ntriples', () => {
+function waitFor (stream) {
+  return new Promise((resolve, reject) => {
+    stream.on('end', resolve)
+    stream.on('error', reject)
+  })
+}
+
+describe('@rdfjs/serializer-ntriples', () => {
   sinkTest(NTriplesSerializer, {readable: true})
 
   it('should serialize incoming quads', () => {
@@ -19,22 +26,21 @@ describe('rdf-serializer-ntriples', () => {
 
     const ntriples = '<http://example.org/subject> <http://example.org/predicate> "object" <http://example.org/graph> .\n'
 
-    let input = new Readable()
+    const input = new Readable({
+      objectMode: true,
+      read: () => {
+        input.push(quad)
+        input.push(null)
+      }
+    })
 
-    input._readableState.objectMode = true
-
-    input._read = () => {
-      input.push(quad)
-      input.push(null)
-    }
-
-    let serializer = new NTriplesSerializer()
-    let stream = serializer.import(input)
+    const serializer = new NTriplesSerializer()
+    const stream = serializer.import(input)
 
     return Promise.resolve().then(() => {
       assert.equal(stream.read().toString(), ntriples)
 
-      return rdf.waitFor(stream)
+      return waitFor(stream)
     })
   })
 })
