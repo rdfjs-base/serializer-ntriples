@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/rdfjs/serializer-ntriples.git"
+    "url": "git://github.com/rdfjs-base/serializer-ntriples.git"
   },
   "keywords": [
     "rdf",
@@ -19,9 +19,9 @@
   "author": "Thomas Bergwinkl <bergi@axolotlfarm.org> (https://www.bergnet.org/people/bergi/card#me)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/rdfjs/serializer-ntriples/issues"
+    "url": "https://github.com/rdfjs-base/serializer-ntriples/issues"
   },
-  "homepage": "https://github.com/rdfjs/serializer-ntriples",
+  "homepage": "https://github.com/rdfjs-base/serializer-ntriples",
   "dependencies": {
     "@rdfjs/sink": "^1.0.2",
     "@rdfjs/to-ntriples": "^1.0.0",
