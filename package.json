@@ -1,6 +1,6 @@
 {
   "name": "@rdfjs/serializer-ntriples",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "N-Triples serializer that implements the RDFJS Sink interface",
   "main": "index.js",
   "scripts": {
