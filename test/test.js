@@ -1,22 +1,15 @@
-/* global describe, it */
-
-const assert = require('assert')
+const { strictEqual } = require('assert')
+const getStream = require('get-stream')
+const { describe, it } = require('mocha')
 const rdf = require('@rdfjs/data-model')
 const sinkTest = require('@rdfjs/sink/test')
-const NTriplesSerializer = require('..')
 const Readable = require('readable-stream')
-
-function waitFor (stream) {
-  return new Promise((resolve, reject) => {
-    stream.on('end', resolve)
-    stream.on('error', reject)
-  })
-}
+const NTriplesSerializer = require('..')
 
 describe('@rdfjs/serializer-ntriples', () => {
-  sinkTest(NTriplesSerializer, {readable: true})
+  sinkTest(NTriplesSerializer, { readable: true })
 
-  it('should serialize incoming quads', () => {
+  it('should serialize incoming quads', async () => {
     const quad = rdf.quad(
       rdf.namedNode('http://example.org/subject'),
       rdf.namedNode('http://example.org/predicate'),
@@ -37,10 +30,8 @@ describe('@rdfjs/serializer-ntriples', () => {
     const serializer = new NTriplesSerializer()
     const stream = serializer.import(input)
 
-    return Promise.resolve().then(() => {
-      assert.equal(stream.read().toString(), ntriples)
+    const result = await getStream(stream)
 
-      return waitFor(stream)
-    })
+    strictEqual(result, ntriples)
   })
 })
