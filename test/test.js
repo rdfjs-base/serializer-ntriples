@@ -1,10 +1,10 @@
-const { strictEqual } = require('assert')
-const getStream = require('get-stream')
-const { describe, it } = require('mocha')
-const rdf = require('@rdfjs/data-model')
-const sinkTest = require('@rdfjs/sink/test')
-const Readable = require('readable-stream')
-const NTriplesSerializer = require('..')
+import { strictEqual } from 'assert'
+import rdf from '@rdfjs/data-model'
+import sinkTest from '@rdfjs/sink/test/index.js'
+import { describe, it } from 'mocha'
+import { Readable } from 'readable-stream'
+import decode from 'stream-chunks/decode.js'
+import NTriplesSerializer from '../index.js'
 
 describe('@rdfjs/serializer-ntriples', () => {
   sinkTest(NTriplesSerializer, { readable: true })
@@ -18,19 +18,12 @@ describe('@rdfjs/serializer-ntriples', () => {
     )
 
     const ntriples = '<http://example.org/subject> <http://example.org/predicate> "object" <http://example.org/graph> .\n'
-
-    const input = new Readable({
-      objectMode: true,
-      read: () => {
-        input.push(quad)
-        input.push(null)
-      }
-    })
+    const input = Readable.from([quad])
 
     const serializer = new NTriplesSerializer()
     const stream = serializer.import(input)
 
-    const result = await getStream(stream)
+    const result = await decode(stream)
 
     strictEqual(result, ntriples)
   })
