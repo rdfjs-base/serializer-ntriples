@@ -1,5 +1,5 @@
 # @rdfjs/serializer-ntriples
-[![build status](https://img.shields.io/github/workflow/status/rdfjs-base/serializer-ntriples/Test)](https://github.com/rdfjs-base/serializer-ntriples/actions/workflows/test.yaml)
+[![build status](https://img.shields.io/github/actions/workflow/status/rdfjs-base/serializer-ntriples/test.yaml?branch=master)](https://github.com/rdfjs-base/serializer-ntriples/actions/workflows/test.yaml)
 [![npm version](https://img.shields.io/npm/v/@rdfjs/serializer-ntriples.svg)](https://www.npmjs.com/package/@rdfjs/serializer-ntriples)
 
 N-Triples serializer that implements the [RDF/JS Sink interface](http://rdf.js.org/).

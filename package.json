@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/rdfjs-base/serializer-ntriples.git"
+    "url": "https://github.com/rdfjs-base/serializer-ntriples.git"
   },
   "keywords": [
     "rdf",
@@ -23,30 +23,18 @@
     "url": "https://github.com/rdfjs-base/serializer-ntriples/issues"
   },
   "homepage": "https://github.com/rdfjs-base/serializer-ntriples",
-  "dependencies1": {
-    "@rdfjs/sink": "^1.0.3",
-    "@rdfjs/to-ntriples": "^1.0.2",
-    "readable-to-readable": "^0.1.0"
-  },
-  "devDependencies1": {
-    "@rdfjs/data-model": "^1.1.2",
-    "get-stream": "^5.1.0",
-    "mocha": "^7.1.1",
-    "readable-stream": "^3.6.0",
-    "standard": "^14.3.3"
-  },
   "dependencies": {
-    "@rdfjs/to-ntriples": "^2.0.0",
+    "@rdfjs/sink": "^2.0.1",
+    "@rdfjs/to-ntriples": "^3.0.1",
     "duplex-to": "^2.0.0",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.5.2"
   },
   "devDependencies": {
-    "@rdfjs/data-model": "^2.0.1",
-    "@rdfjs/sink": "^2.0.0",
-    "assert": "^2.0.0",
-    "c8": "^7.12.0",
-    "mocha": "^10.0.0",
+    "@rdfjs/data-model": "^2.0.2",
+    "assert": "^2.1.0",
+    "c8": "^9.1.0",
+    "mocha": "^10.3.0",
     "stream-chunks": "^1.0.0",
-    "stricter-standard": "^0.2.0"
+    "stricter-standard": "^0.3.0"
   }
 }
